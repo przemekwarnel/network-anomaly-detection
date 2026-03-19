@@ -39,7 +39,7 @@ def select_threshold(errors: np.ndarray, y_true: pd.Series) -> float:
     best_threshold = 0.0
     best_f1 = 0.0
 
-    for threshold in np.linspace(errors.min(), errors.max(), 100):
+    for threshold in np.linspace(np.percentile(errors, 1), np.percentile(errors, 99), 100):
         y_pred = predict_anomalies(errors, threshold)
         tp = np.sum((y_pred == 1) & (y_true_binary == 1))
         fp = np.sum((y_pred == 1) & (y_true_binary == 0))

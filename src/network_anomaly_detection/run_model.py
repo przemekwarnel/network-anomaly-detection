@@ -2,6 +2,7 @@ import torch
 import argparse
 import yaml
 from pathlib import Path
+import pickle
 
 from network_anomaly_detection.config import load_config
 from network_anomaly_detection.data_loading import load_data
@@ -47,7 +48,7 @@ def main():
     train_normal, val_df, test_df = split_data(df, train_size, val_size, test_size, random_state)
 
     # Preprocess data
-    X_train, X_val, X_test, y_val, y_test, _ = preprocess_data(train_normal, val_df, test_df, target_column)
+    X_train, X_val, X_test, y_val, y_test, scaler = preprocess_data(train_normal, val_df, test_df, target_column)
 
     # Create model
     input_dim = X_train.shape[1]
@@ -78,6 +79,8 @@ def main():
     results = {
         "model": "Autoencoder",
         "params": {
+            "random_state": random_state,
+            "input_dim": input_dim,
             "hidden_dims": hidden_dims,
             "latent_dim": latent_dim,
             "batch_size": batch_size,
@@ -86,20 +89,35 @@ def main():
             "criterion": criterion_name,
             "optimizer": optimizer_name
         },
-        "best_threshold": best_threshold,
-        "metrics": metrics,
+        "best_threshold": float(best_threshold),
+        "metrics": {
+            "precision": float(metrics["precision"]),
+            "recall": float(metrics["recall"]),
+            "f1_score": float(metrics["f1_score"])
+        },
     }
 
-    Path("reports").mkdir(exist_ok=True)
-    with open("reports/results.yaml", "w") as f:
-        yaml.dump(results, f)
+    reports_dir = Path("reports")
+    reports_dir.mkdir(exist_ok=True)
+
+    with open(reports_dir / "results.yaml", "w") as f:
+        yaml.safe_dump(results, f)
     
-    # Save model
-    Path("models").mkdir(exist_ok=True)
-    torch.save(model.state_dict(), "models/autoencoder.pth")
+    # Save mode, scaler, and threshold for future inference
+    models_dir = Path("models")
+    models_dir.mkdir(exist_ok=True)
+
+    torch.save(model.state_dict(), models_dir / "autoencoder.pth")
+
+    with open(models_dir / "scaler.pkl", "wb") as f:
+        pickle.dump(scaler, f)
+
+    with open(models_dir / "threshold.yaml", "w") as f:
+        yaml.safe_dump({"threshold": float(best_threshold)}, f)
+
 
     # Plot and save training loss curve
-    plot_training_loss(train_losses, "reports/training_loss.png")
+    plot_training_loss(train_losses, reports_dir / "training_loss.png")
 
 
 if __name__ == "__main__":
