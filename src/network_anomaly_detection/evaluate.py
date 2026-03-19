@@ -3,13 +3,9 @@ import pandas as pd
 
 from sklearn.metrics import precision_score, recall_score, f1_score
 
+from network_anomaly_detection.utils import change_labels_to_binary
 from network_anomaly_detection.detect import predict_anomalies
 
-
-def change_labels_to_binary(y: pd.Series) -> np.ndarray:
-    """Convert labels to binary (0 = normal, 1 = anomaly)."""
-    
-    return (y != "normal").astype(int).to_numpy()
 
 def evaluate_model(
         errors: np.ndarray,

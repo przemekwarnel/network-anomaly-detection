@@ -1,7 +1,9 @@
 data:
   path: data/raw/KDD_Cup_1999.csv.gz
   target_column: outcome
-  test_size: 0.2
+  train_size: 0.7
+  val_size: 0.15
+  test_size: 0.15
   random_state: 42
 
 model:
@@ -10,5 +12,7 @@ model:
 
 training:
   batch_size: 256
-  epochs: 20
+  num_epochs: 20
   learning_rate: 0.001
+  criterion: MSELoss
+  optimizer: Adam

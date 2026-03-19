@@ -1,11 +1,12 @@
+import pandas as pd
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 
 
-def create_dataloader(X, batch_size: int) -> DataLoader:
+def create_dataloader(X: pd.DataFrame, batch_size: int) -> DataLoader:
     """Create a DataLoader for the given dataset."""
 
-    dataset = TensorDataset(torch.tensor(X, dtype=torch.float32))
+    dataset = TensorDataset(torch.tensor(X.to_numpy(), dtype=torch.float32))
 
     return DataLoader(dataset, batch_size=batch_size, shuffle=True)
 

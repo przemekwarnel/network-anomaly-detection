@@ -20,7 +20,8 @@ def preprocess_data(
         raise ValueError(f"All dataframes must contain the '{target_column}' column.")
     
     # Remove features with zero variance
-    zero_var_cols = df_train.columns[df_train.nunique() <= 1]
+    feature_cols = [col for col in df_train.columns if col != target_column]
+    zero_var_cols = df_train[feature_cols].columns[df_train[feature_cols].nunique() <= 1]
 
     df_train = df_train.drop(columns=zero_var_cols)
     df_val = df_val.drop(columns=zero_var_cols)

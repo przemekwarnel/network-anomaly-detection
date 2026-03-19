@@ -2,7 +2,7 @@ import torch
 import numpy as np
 import pandas as pd
 
-from network_anomaly_detection.evaluate import change_labels_to_binary
+from network_anomaly_detection.utils import change_labels_to_binary
 
 
 def get_reconstruction_errors(model, dataloader, device: torch.device) -> np.ndarray:
