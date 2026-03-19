@@ -1,5 +1,8 @@
 import torch
 import numpy as np
+import pandas as pd
+
+from network_anomaly_detection.evaluate import change_labels_to_binary
 
 
 def get_reconstruction_errors(model, dataloader, device: torch.device) -> np.ndarray:
@@ -28,17 +31,19 @@ def predict_anomalies(errors: np.ndarray, threshold: float) -> np.ndarray:
     return y_pred
 
 
-def select_threshold(errors: np.ndarray, y_true: np.ndarray) -> float:
-    """Select optimal threshold based on validation set. y_true should be binary (1 for anomaly, 0 for normal)."""
+def select_threshold(errors: np.ndarray, y_true: pd.Series) -> float:
+    """Select optimal threshold based on validation set."""
+
+    y_true_binary = change_labels_to_binary(y_true)
 
     best_threshold = 0.0
     best_f1 = 0.0
 
     for threshold in np.linspace(errors.min(), errors.max(), 100):
         y_pred = predict_anomalies(errors, threshold)
-        tp = np.sum((y_pred == 1) & (y_true == 1))
-        fp = np.sum((y_pred == 1) & (y_true == 0))
-        fn = np.sum((y_pred == 0) & (y_true == 1))
+        tp = np.sum((y_pred == 1) & (y_true_binary == 1))
+        fp = np.sum((y_pred == 1) & (y_true_binary == 0))
+        fn = np.sum((y_pred == 0) & (y_true_binary == 1))
 
         precision = tp / (tp + fp) if (tp + fp) > 0 else 0
         recall = tp / (tp + fn) if (tp + fn) > 0 else 0
