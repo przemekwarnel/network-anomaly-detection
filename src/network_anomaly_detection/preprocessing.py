@@ -31,11 +31,11 @@ def preprocess_data(
     X_train = df_train.drop(columns=[target_column])
 
     # Separate target from features in test and validation sets
-    X_test = df_test.drop(columns=[target_column])
-    y_test = df_test[target_column]
-
     X_val = df_val.drop(columns=[target_column])
     y_val = df_val[target_column]
+
+    X_test = df_test.drop(columns=[target_column])
+    y_test = df_test[target_column]
     
     # One-hot encode categorical features
     categorical_cols = X_train.select_dtypes(include=["object", "category"]).columns
@@ -52,7 +52,7 @@ def preprocess_data(
     scaler = StandardScaler()
     scaler.fit(X_train)
 
-    # Transform both training and test data
+    # Transform training, validation, and test data
     X_train_scaled = pd.DataFrame(
         scaler.transform(X_train),
         columns=X_train.columns,
@@ -72,3 +72,29 @@ def preprocess_data(
     )   
 
     return X_train_scaled, X_val_scaled, X_test_scaled, y_val, y_test, scaler
+
+
+def preprocess_new_data(
+    df: pd.DataFrame,
+    scaler: StandardScaler,
+    feature_columns: list[str],
+    target_column: str
+) -> pd.DataFrame:
+    """Preprocess new data for inference."""
+
+    if target_column in df.columns:
+        df = df.drop(columns=[target_column])
+
+    categorical_cols = df.select_dtypes(include=["object", "category"]).columns
+
+    df = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
+
+    df = df.reindex(columns=feature_columns, fill_value=0)
+
+    df_scaled = pd.DataFrame(
+        scaler.transform(df),
+        columns=feature_columns,
+        index=df.index
+    )
+
+    return df_scaled
