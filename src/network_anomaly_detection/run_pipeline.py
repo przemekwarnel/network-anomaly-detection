@@ -56,21 +56,21 @@ def main():
 
     # Train model
     device = get_device()
-    train_loader = create_dataloader(X_train, batch_size)
+    train_loader = create_dataloader(X_train, batch_size, shuffle=True)
     criterion = getattr(torch.nn, criterion_name)()
     optimizer = getattr(torch.optim, optimizer_name)(model.parameters(), lr=learning_rate)
 
     train_losses = train_model(model, train_loader, criterion, optimizer, num_epochs, device)
 
     # Optimize threshold on validation set
-    val_loader = create_dataloader(X_val, batch_size)
+    val_loader = create_dataloader(X_val, batch_size, shuffle=False)
     val_errors = get_reconstruction_errors(model, val_loader, device)
     
     best_threshold = select_threshold(val_errors, y_val)
     print(f"Selected threshold: {best_threshold:.4f}")
 
     # Evaluate on test set
-    test_loader = create_dataloader(X_test, batch_size)
+    test_loader = create_dataloader(X_test, batch_size, shuffle=False)
     test_errors = get_reconstruction_errors(model, test_loader, device)
 
     metrics = evaluate_model(test_errors, y_test, best_threshold)
@@ -103,7 +103,7 @@ def main():
     with open(reports_dir / "results.yaml", "w") as f:
         yaml.safe_dump(results, f)
     
-    # Save mode, scaler, and threshold for future inference
+    # Save model, scaler, list of feature columns, and threshold for future inference
     models_dir = Path("models")
     models_dir.mkdir(exist_ok=True)
 
@@ -112,9 +112,11 @@ def main():
     with open(models_dir / "scaler.pkl", "wb") as f:
         pickle.dump(scaler, f)
 
+    with open(models_dir / "features.pkl", "wb") as f:
+        pickle.dump(list(X_train.columns), f)
+
     with open(models_dir / "threshold.yaml", "w") as f:
         yaml.safe_dump({"threshold": float(best_threshold)}, f)
-
 
     # Plot and save training loss curve
     plot_training_loss(train_losses, reports_dir / "training_loss.png")
