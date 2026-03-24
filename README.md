@@ -40,6 +40,8 @@ For the purpose of anomaly detection:
 - `normal` connections are treated as inliers,
 - all other classes are treated as anomalies.
 
+The dataset is included in the repository for reproducibility.
+
 A small sample file (`data/sample.csv`) is included for quick inference testing.
 
 > Data source: UCI Machine Learning Repository / KDD Cup 1999
@@ -173,18 +175,20 @@ cd network-anomaly-detection
 pip install -r requirements.txt
 ```
 
-### Train model
+Train the model:
 
 ```bash
 python -m network_anomaly_detection.run_pipeline --config configs/base.yaml
 ```
 
-### Run inference
+Run inference:
+
 ```bash
 python -m network_anomaly_detection.predict --input data/sample.csv --model_dir models
 ```
 
-### Run tests 
+Run tests:
+
 ```
 pytest
 ```
