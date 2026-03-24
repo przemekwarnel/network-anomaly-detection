@@ -83,6 +83,7 @@ network-anomaly-detection
 │       ├── detect.py             # reconstruction errors, best threshold, and predicting anomalies
 │       ├── evaluate.py           # model evaluation
 │       ├── model.py              # autoencoder model definition
+│       ├── predict.py            # run local inference
 │       ├── preprocessing.py      # data preprocessing
 │       ├── run_pipeline.py       # run end-to-end training and evaluation
 │       ├── train.py              # model training
