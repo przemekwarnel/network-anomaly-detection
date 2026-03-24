@@ -165,7 +165,7 @@ The training loss curve shows stable convergence without significant overfitting
 
 ![Training Loss](reports/training_loss.png)
 
-## How to Run
+## Installation
 
 Clone the repository and install dependencies:
 
@@ -174,6 +174,8 @@ git clone https://github.com/przemekwarnel/network-anomaly-detection.git
 cd network-anomaly-detection
 pip install -r requirements.txt
 ```
+
+## How to Run
 
 Train the model:
 
