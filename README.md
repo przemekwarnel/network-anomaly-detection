@@ -1,6 +1,6 @@
 # Network Anomaly Detection with Autoencoder
 
-## Overview
+## Project Overview
 
 This project implements an anomaly detection system for network traffic using an autoencoder trained exclusively on normal data. The model learns to reconstruct typical network behavior, and anomalies are identified based on reconstruction error.
 
